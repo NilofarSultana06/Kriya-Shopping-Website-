@@ -10,7 +10,7 @@
 <body>
   <header class="topbar">
     <a class="brand" href="#" aria-label="KRIYA home"><span class="brand-mark">K</span><span>KRIYA<span class="brand-dot">.</span></span></a>
-    <nav class="desktop-nav"><a href="#shop">Shop</a><a href="#about">About</a></nav>
+    <nav class="desktop-nav"><a href="#new-arrivals">New Arrivals</a><a href="#shop">Shop</a><a href="#about">About</a></nav>
     <button class="cart-trigger" id="cartToggle" aria-label="Open shopping cart">
       <span>Cart</span><span class="cart-icon">▣</span><span class="cart-count" id="cartCount">0</span>
     </button>
@@ -27,10 +27,26 @@
       <div class="hero-art" aria-label="Abstract product display">
         <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
         <div class="hero-disc"></div>
-        <div class="hero-card"><span>NEW<br>ARRIVALS</span><b>01 / 06</b></div>
+        <a class="hero-card" href="#new-arrivals" aria-label="Explore new arrivals"><span>NEW<br>ARRIVALS</span><b id="heroNewCount">03 / 06</b></a>
         <span class="art-caption">CURATED FOR YOU — 2026</span>
       </div>
       <div class="hero-bottom"><span>01 — SIMPLE FINDS</span><span>SCROLL TO DISCOVER ↓</span></div>
+    </section>
+
+    <section class="new-arrivals-section" id="new-arrivals" aria-label="New Arrivals">
+      <div class="section-heading">
+        <div>
+          <span class="badge section-badge">NEW ARRIVALS</span>
+          <p class="eyebrow"><span class="eyebrow-line"></span> FRESH DROPS</p>
+          <h2>New arrivals<span>.</span></h2>
+        </div>
+        <p class="section-note">Just landed. Explore our latest everyday essentials.</p>
+      </div>
+      <div class="new-arrivals-meta">
+        <span class="meta-label">LATEST ADDITIONS</span>
+        <span id="newArrivalsCount" class="meta-count">03 ITEMS&nbsp; · &nbsp;CURATED NOW</span>
+      </div>
+      <div class="product-grid new-arrivals-grid" id="newArrivalsGrid"></div>
     </section>
 
     <section class="shop-section" id="shop">
@@ -39,7 +55,22 @@
         <p class="section-note">A few good things, picked just for you.</p>
       </div>
       <div class="filter-row">
-        <span>FEATURED PRODUCTS</span><span>06 ITEMS&nbsp; · &nbsp;PRICES IN INR</span>
+        <div class="sort-controls">
+          <label for="sortSelect" class="sort-label">Sort by</label>
+          <div class="sort-select-wrapper">
+            <select id="sortSelect" name="sort" class="sort-select" aria-label="Sort products">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name-asc">Name: A to Z</option>
+              <option value="name-desc">Name: Z to A</option>
+            </select>
+            <span class="sort-arrow" aria-hidden="true">▾</span>
+          </div>
+        </div>
+        <div class="filter-meta">
+          <span id="productCount">06 ITEMS</span>&nbsp; · &nbsp;<span>PRICES IN INR</span>
+        </div>
       </div>
       <div class="product-grid" id="productGrid"></div>
     </section>
