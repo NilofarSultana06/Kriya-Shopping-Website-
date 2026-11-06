@@ -1,10 +1,10 @@
 const products = [
   {id:1,name:"Orbit Headphones",price:2499,desc:"Wireless sound, made simple.",emoji:"◉",c1:"#d9e6a2",c2:"#74804b",shape:"round",tag:"BESTSELLER"},
-  {id:2,name:"Everyday Backpack",price:1899,desc:"Room for all your essentials.",emoji:"▣",c1:"#c8a78c",c2:"#76543f",shape:"",tag:""},
+  {id:2,name:"Everyday Backpack",price:1899,desc:"Room for all your essentials.",image:"https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=800&q=85",imageFit:"contain",c1:"#c8a78c",c2:"#76543f",shape:"",tag:""},
   {id:3,name:"Aura Water Bottle",price:699,desc:"Hydration with a little style.",emoji:"♢",c1:"#a6c9cf",c2:"#47717a",shape:"slim",tag:""},
   {id:4,name:"Studio Desk Lamp",price:1299,desc:"A warm glow for late ideas.",emoji:"☼",c1:"#e8c77c",c2:"#9b7132",shape:"",tag:"NEW"},
   {id:5,name:"Classic Sneakers",price:2199,desc:"Your everyday go-to pair.",emoji:"⌁",c1:"#d8d5cd",c2:"#77736a",shape:"flat",tag:""},
-  {id:6,name:"Minimal Watch",price:1599,desc:"A timeless finishing touch.",emoji:"◷",c1:"#d4c5a7",c2:"#75644b",shape:"round",tag:""}
+  {id:6,name:"Minimal Watch",price:1599,desc:"A timeless finishing touch.",image:"https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=800&q=85",tag:""}
 ];
 let cart = {};
 const grid = document.getElementById("productGrid");
@@ -15,9 +15,9 @@ const money = n => "₹" + n.toLocaleString("en-IN");
 function renderProducts(){
   grid.innerHTML = products.map(p => `
     <article class="product-card">
-      <div class="product-art">
+      <div class="product-art ${p.image ? "product-art--photo" : ""} ${p.imageFit === "contain" ? "product-art--contain" : ""}">
         ${p.tag ? `<span class="tag">${p.tag}</span>` : ""}
-        <div class="shape ${p.shape}" style="--c1:${p.c1};--c2:${p.c2}">${p.emoji}</div>
+        ${p.image ? `<img class="product-image${p.imageFit === "contain" ? " product-image--contain" : ""}" src="${p.image}" alt="${p.name}" loading="lazy" decoding="async">` : `<div class="shape ${p.shape}" style="--c1:${p.c1};--c2:${p.c2}">${p.emoji}</div>`}
       </div>
       <div class="product-info">
         <div class="product-top"><span class="product-name">${p.name}</span><span class="product-price">${money(p.price)}</span></div>
@@ -39,7 +39,7 @@ function renderCart(){
   items.innerHTML=entries.map(([id,qty])=>{
     const p=products.find(item=>item.id===Number(id));
     return `<div class="cart-item">
-      <div class="mini-art" style="--c1:${p.c1};--c2:${p.c2}">${p.emoji}</div>
+      <div class="mini-art${p.image ? " mini-art--photo" : ""}${p.imageFit === "contain" ? " mini-art--contain" : ""}" style="--c1:${p.c1};--c2:${p.c2}">${p.image ? `<img class="${p.imageFit === "contain" ? "product-image--contain" : ""}" src="${p.image}" alt="" loading="lazy" decoding="async">` : p.emoji}</div>
       <div><div class="cart-item-name">${p.name}</div><div class="cart-item-price">${money(p.price)}</div>
         <div class="quantity"><button data-change="${id}" data-delta="-1" aria-label="Decrease quantity">−</button><span>${qty}</span><button data-change="${id}" data-delta="1" aria-label="Increase quantity">＋</button></div>
       </div>
