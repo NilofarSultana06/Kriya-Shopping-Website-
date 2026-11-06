@@ -4,7 +4,7 @@ KRIYA SHOPPING WEBSITE
 WHAT'S INCLUDED
 - index.html: website structure
 - style.css: dark theme and responsive styling
-- script.js: product list and shopping cart functionality
+- script.js: product list, shopping cart, and shared client-side form validation
 
 HOW TO RUN IN VS CODE (NO NODE.JS REQUIRED)
 1. Extract the ZIP file to a folder on your computer.
@@ -25,5 +25,6 @@ ALTERNATIVE WITHOUT AN EXTENSION
 
 NOTES
 - This is a front-end demo website. The cart works in the browser, but checkout does not process real payments.
+- Login, registration, contact, and checkout forms show field-level validation errors; account and message submissions are demos and are not sent to a server.
 - Product details and prices can be edited in script.js in the products array.
 - Google Fonts are used for typography; if you are offline, the browser will use fallback fonts.

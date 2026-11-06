@@ -8,12 +8,18 @@ const products = [
 ];
 let cart = {};
 const grid = document.getElementById("productGrid");
+const productSearch = document.getElementById("productSearch");
+const noResults = document.getElementById("noResults");
 const cartDrawer = document.getElementById("cartDrawer");
 const overlay = document.getElementById("overlay");
+const authDialog = document.getElementById("authDialog");
+const checkoutDialog = document.getElementById("checkoutDialog");
 const money = n => "₹" + n.toLocaleString("en-IN");
 
-function renderProducts(){
-  grid.innerHTML = products.map(p => `
+function renderProducts(query = ""){
+  const searchTerm = query.trim().toLocaleLowerCase();
+  const matchingProducts = products.filter(p => p.name.toLocaleLowerCase().includes(searchTerm));
+  grid.innerHTML = matchingProducts.map(p => `
     <article class="product-card">
       <div class="product-art">
         ${p.tag ? `<span class="tag">${p.tag}</span>` : ""}
@@ -25,6 +31,53 @@ function renderProducts(){
         <button class="add-btn" data-add="${p.id}">Add to cart <span>＋</span></button>
       </div>
     </article>`).join("");
+  noResults.hidden = matchingProducts.length > 0;
+}
+function fieldError(field){
+  const value=field.value.trim();
+  if(field.required&&!value)return "This field is required.";
+  if(!value)return "";
+  if(field.type==="email"&&field.validity.typeMismatch)return "Enter a valid email address.";
+  if(field.minLength>0&&value.length<field.minLength)return `Enter at least ${field.minLength} characters.`;
+  if(field.dataset.format==="phone"&&(!/^[0-9+() -]+$/.test(value)||value.replace(/\D/g,"").length<7||value.replace(/\D/g,"").length>15))return "Enter a valid phone number.";
+  if(field.dataset.format==="postal-code"&&!/^[A-Za-z0-9 -]{3,12}$/.test(value))return "Enter a valid postal code.";
+  if(field.validity.patternMismatch)return field.type==="tel"?"Enter a valid phone number.":"Enter a valid postal code.";
+  const match=field.dataset.match&&document.getElementById(field.dataset.match);
+  if(match&&field.value!==match.value)return "Passwords do not match.";
+  return "";
+}
+function validateField(field){
+  const message=fieldError(field);
+  const error=document.getElementById(`${field.id}Error`);
+  if(message)field.setAttribute("aria-invalid","true");
+  else field.removeAttribute("aria-invalid");
+  error.textContent=message;
+  error.hidden=!message;
+  return !message;
+}
+function validateForm(form,focusInvalid=true){
+  let valid=true;
+  let firstInvalid=null;
+  form.querySelectorAll("input,textarea,select").forEach(field=>{
+    if(!validateField(field)){valid=false;firstInvalid=firstInvalid||field;}
+  });
+  if(firstInvalid&&focusInvalid)firstInvalid.focus();
+  return valid;
+}
+function clearFormErrors(form){
+  form.querySelectorAll("input,textarea,select").forEach(field=>{
+    field.removeAttribute("aria-invalid");
+    const error=document.getElementById(`${field.id}Error`);
+    error.textContent="";
+    error.hidden=true;
+  });
+  delete form.dataset.submitted;
+}
+function openAuthForm(type){
+  const selected=authDialog.querySelector(`[data-auth-form="${type}"]`);
+  authDialog.querySelectorAll("[data-auth-form]").forEach(form=>{form.hidden=form!==selected;});
+  document.getElementById("authDialogTitle").firstChild.textContent=type==="login"?"Log in":"Create account";
+  if(!authDialog.open)authDialog.showModal();
 }
 function addToCart(id){cart[id]=(cart[id]||0)+1;renderCart();showToast("Added to your cart");}
 function changeQty(id,delta){cart[id]=(cart[id]||0)+delta;if(cart[id]<=0)delete cart[id];renderCart();}
@@ -61,9 +114,44 @@ document.getElementById("cartItems").addEventListener("click",e=>{
 document.getElementById("cartToggle").addEventListener("click",openCart);
 document.getElementById("closeCart").addEventListener("click",closeCart);
 overlay.addEventListener("click",closeCart);
+document.addEventListener("click",e=>{
+  const authTrigger=e.target.closest("[data-open-auth]");
+  const closeTrigger=e.target.closest("[data-close-dialog]");
+  if(authTrigger)openAuthForm(authTrigger.dataset.openAuth);
+  if(closeTrigger)closeTrigger.closest("dialog").close();
+});
+document.querySelectorAll("dialog").forEach(dialog=>{
+  dialog.addEventListener("click",e=>{if(e.target===dialog)dialog.close();});
+});
+document.querySelectorAll(".validated-form").forEach(form=>{
+  form.addEventListener("submit",e=>{
+    e.preventDefault();
+    form.dataset.submitted="true";
+    if(!validateForm(form))return;
+    const submittedForm=form.id;
+    form.reset();
+    clearFormErrors(form);
+    if(submittedForm==="contactForm"){
+      showToast("Thanks! This demo doesn’t send messages yet.");
+    }else if(submittedForm==="checkoutForm"){
+      checkoutDialog.close();
+      showToast("Details look good. Demo checkout — no payment is connected.");
+    }else{
+      authDialog.close();
+      showToast("Your details look good. Account services aren’t connected yet.");
+    }
+  });
+  form.addEventListener("input",e=>{
+    if(form.dataset.submitted==="true")validateForm(form,false);
+    else if(e.target.matches("[aria-invalid='true']"))validateField(e.target);
+    const confirmation=form.querySelector(`[data-match="${e.target.id}"]`);
+    if(confirmation&&confirmation.getAttribute("aria-invalid")==="true")validateField(confirmation);
+  });
+});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCart();});
 document.getElementById("checkoutBtn").addEventListener("click",()=>{
   if(!Object.keys(cart).length){showToast("Your cart is empty");return;}
-  showToast("Demo checkout — no payment is connected");
+  checkoutDialog.showModal();
 });
+productSearch.addEventListener("input",()=>renderProducts(productSearch.value));
 renderProducts();renderCart();
